@@ -18,9 +18,6 @@
             <div class="card mb-4">
                 <h:form id="menuForm">
                     <p:menubar>
-                        <f:facet name="start">
-                            <span class="font-bold text-xl">Admin Panel</span>
-                        </f:facet>
                         <f:facet name="end">
                             <p:commandButton value="Logout"
                                              action="#{loginBean.logout}"
@@ -67,8 +64,7 @@
                         </div>
                     </div>
 
-                    <!-- TABLA USUARIOS -->
-                    <p:panel header="Gestión de Usuarios">
+                    <p:panel header="Gestión de usuarios">
                         <p:dataTable id="dt-users"
                                      value="#{adminBean.users}"
                                      var="user"
