@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:p="primefaces"
+      xmlns:f="jakarta.faces.core"
+      xmlns:ui="jakarta.faces.facelets">
+
+    <h:head>
+        <title>Login</title>
+        <h:outputStylesheet library="webjars" name="primeflex/3.3.1/primeflex.min.css"/>
+        <h:outputStylesheet library="css" name="layout.css" />
+    </h:head>
+
+    <h:body>
+        <div class="layout-wrapper">
+            <div class="layout-content layout-content-inner">
+                <div class="m-4 crud-demo">
+                    <div class="flex justify-content-center flex-wrap">
+                        <h1 class="flex align-items-center justify-content-center font-bold m-2">
+                            Inicia sesión
+                        </h1>
+                    </div>
+
+                    <h:form id="loginForm">
+                        <p:growl id="messages" showDetail="true" life="3000" />
+                        <p:panel style="width:350px; margin:auto; margin-top:50px">
+                            <div class="field">
+                                <p:outputLabel for="email"
+                                               value="Email"
+                                               styleClass="block mb-2" />
+                                <p:inputText id="email"
+                                             value="#{loginBean.email}"
+                                             required="true"
+                                             style="width: 100%"/>
+                            </div>
+
+                            <div class="field mt-4">
+                                <p:outputLabel for="password"
+                                               value="Contraseña"
+                                               styleClass="block mb-2" />
+                                <p:password id="password"
+                                            value="#{loginBean.password}"
+                                            required="true"
+                                            feedback="false"
+                                            style="width: 100%"/>
+                            </div>
+
+                            <p:commandButton value="Ingresar"
+                                             action="#{loginBean.login}"
+                                             update="loginForm"
+                                             styleClass="mt-4"
+                                             style="width:100%" />
+
+                            <div class="text-center mt-3">
+                                <span>¿No tienes cuenta? </span>
+                                <p:commandLink value="Regístrate aquí"
+                                               oncomplete="PF('dlgRegistro').show()" 
+                                               process="@this" 
+                                               update=":formRegistro"
+                                               style="font-weight: bold; color: #2196F3;"/>
+                            </div>
+                        </p:panel>
+                    </h:form>
+
+                    <p:dialog header="Registro"
+                              widgetVar="dlgRegistro"
+                              modal="true"
+                              showEffect="fade"
+                              responsive="true"
+                              width="400">
+                        <h:form id="formRegistro">
+                            <div class="ui-fluid">
+                                <div class="field mb-3">
+                                    <p:outputLabel for="regNombre"
+                                                   value="Nombre" />
+                                    <p:inputText id="regNombre"
+                                                 value="#{registerBean.user.name}"
+                                                 required="true" />
+                                </div>
+                                <div class="field mb-3">
+                                    <p:outputLabel for="regEmail"
+                                                   value="Email" />
+                                    <p:inputText id="regEmail"
+                                                 value="#{registerBean.user.email}"
+                                                 required="true" />
+                                </div>
+                                <div class="field mb-3">
+                                    <p:outputLabel for="regPass"
+                                                   value="Contraseña" />
+                                    <p:password id="regPass"
+                                                value="#{registerBean.user.password}"
+                                                required="true"
+                                                toggleMask="true" />
+                                </div>
+
+                                <p:staticMessage severity="info"
+                                                 summary="Info"
+                                                 detail="Se registrará como usuario estándar."
+                                                 styleClass="mb-3" />
+                            </div>
+                        </h:form>
+                        <f:facet name="footer">
+                            <p:commandButton value="Guardar" 
+                                             icon="pi pi-check" 
+                                             action="#{registerBean.register()}" 
+                                             update=":loginForm:messages" 
+                                             form="formRegistro"
+                                             oncomplete="if (!args.validationFailed) PF('dlgRegistro').hide()" />
+                            <p:commandButton value="Cancelar"
+                                             icon="pi pi-times"
+                                             onclick="PF('dlgRegistro').hide()" 
+                                             type="button"
+                                             styleClass="ui-button-secondary" />
+                        </f:facet>
+                    </p:dialog>
+
+                </div>
+            </div>
+        </div>
+    </h:body>
+</html>

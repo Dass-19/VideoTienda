@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:p="primefaces"
+      xmlns:f="jakarta.faces.core"
+      xmlns:ui="jakarta.faces.facelets">
+    <h:head>
+        <title>Catalogo</title>
+        <h:outputStylesheet library="webjars" name="primeflex/3.3.1/primeflex.min.css"/>
+        <h:outputStylesheet library="css" name="layout.css" />
+    </h:head>
+    <h:body>
+        <div class="layout-wrapper">
+            <div class="card mb-4">
+                <h:form id="menuForm">
+                    <p:growl id="messagesMenu"/>
+                    <p:menubar>
+                        <f:facet name="start">
+                            <p:graphicImage name="images/primefaces-logo.svg" library="showcase" />
+                        </f:facet>
+
+                        <f:facet name="end">
+                            <p:commandButton value="Carrito" 
+                                             icon="pi pi-shopping-cart"
+                                             styleClass="ui-button-success mr-2"
+                                             onclick="PF('dlgCarrito').show()"
+                                             type="button">
+                                <p:badge value="#{cartBean.totalItems}" 
+                                         severity="danger" 
+                                         rendered="#{cartBean.totalItems > 0}" />
+                            </p:commandButton>
+
+                            <p:commandButton value="Logout"
+                                             action="#{loginBean.logout}"
+                                             styleClass="ui-button-info"
+                                             icon="pi pi-fw pi-sign-out" />
+                        </f:facet>
+                    </p:menubar>
+                </h:form>
+            </div>
+
+            <p:dialog header="Mi Carrito" 
+                      widgetVar="dlgCarrito" 
+                      modal="true" 
+                      showEffect="fade" 
+                      width="800"
+                      responsive="true">
+                <h:form id="formCarrito">
+                    <p:dataTable value="#{cartBean.items}" 
+                                 var="item" 
+                                 emptyMessage="El carrito está vacío"
+                                 styleClass="mb-4">
+
+                        <p:column headerText="Película" style="width: 40%">
+                            <h:outputText value="#{item.movieTitle}" />
+                        </p:column>
+
+                        <p:column headerText="Precio" style="width: 15%">
+                            <h:outputText value="$ #{item.unitPrice}">
+                                <f:convertNumber type="number" maxFractionDigits="0" />
+                            </h:outputText>
+                        </p:column>
+
+                        <p:column headerText="Cantidad" style="width: 20%">
+                            <p:spinner value="#{item.quantity}" 
+                                       min="1" 
+                                       max="10">
+                                <p:ajax event="change" 
+                                        listener="#{cartBean.updateQuantity(item.movieId, item.quantity)}"
+                                        update="formCarrito :menuForm" />
+                            </p:spinner>
+                        </p:column>
+
+                        <p:column headerText="Subtotal" style="width: 15%">
+                            <h:outputText value="$ #{item.unitPrice * item.quantity}">
+                                <f:convertNumber type="number" maxFractionDigits="0" />
+                            </h:outputText>
+                        </p:column>
+
+                        <p:column headerText="Acciones" style="width: 10%; text-align: center">
+                            <p:commandButton icon="pi pi-trash" 
+                                             styleClass="ui-button-danger ui-button-rounded"
+                                             action="#{cartBean.removeFromCart(item.movieId)}"
+                                             update="formCarrito :menuForm"
+                                             title="Eliminar">
+                                <p:confirm header="Confirmación" 
+                                           message="¿Eliminar #{item.movieTitle} del carrito?" 
+                                           icon="pi pi-exclamation-triangle" />
+                            </p:commandButton>
+                        </p:column>
+
+                    </p:dataTable>
+
+                    <p:confirmDialog global="true">
+                        <p:commandButton value="Sí" type="button" 
+                                         styleClass="ui-confirmdialog-yes ui-button-success" />
+                        <p:commandButton value="No" type="button" 
+                                         styleClass="ui-confirmdialog-no ui-button-secondary" />
+                    </p:confirmDialog>
+
+                    <div class="text-right mt-4" style="font-size: 1.2em;">
+                        <strong>Total: </strong>
+                        <h:outputText value="$ #{cartBean.total}" style="color: #4CAF50; font-size: 1.5em;">
+                            <f:convertNumber type="number" maxFractionDigits="0" />
+                        </h:outputText>
+                    </div>
+
+                    <div class="mt-4 text-right">
+                        <p:commandButton value="Vaciar carrito" 
+                                         icon="pi pi-trash"
+                                         styleClass="ui-button-warning"
+                                         action="#{cartBean.clear()}"
+                                         update="formCarrito :menuForm"
+                                         rendered="#{not empty cartBean.items}">
+                            <p:confirm header="Confirmación" 
+                                       message="¿Vaciar todo el carrito?" 
+                                       icon="pi pi-exclamation-triangle" />
+                        </p:commandButton>
+
+                        <p:commandButton value="Finalizar Compra" 
+                                         icon="pi pi-check" 
+                                         styleClass="ui-button-success ml-2"
+                                         action="#{cartBean.completePurchase()}"
+                                         disabled="#{empty cartBean.items}"
+                                         update="formCarrito :menuForm"
+                                         oncomplete="if (!args.validationFailed) PF('dlgCarrito').hide()" />
+
+                        <p:commandButton value="Seguir Comprando"
+                                         icon="pi pi-arrow-left"
+                                         onclick="PF('dlgCarrito').hide()" 
+                                         type="button"
+                                         styleClass="ui-button-secondary ml-2" />
+                    </div>
+                </h:form>
+            </p:dialog>
+
+            <p:confirmDialog global="true">
+                <p:commandButton value="Sí" 
+                                 type="button" 
+                                 styleClass="ui-confirmdialog-yes ui-button-success" />
+                <p:commandButton value="No" 
+                                 type="button" 
+                                 styleClass="ui-confirmdialog-no ui-button-secondary" />
+            </p:confirmDialog>
+
+            <div class="layout-content layout-content-inner" style="padding-top: 0;">
+                <div class="m-4 crud-demo">
+                    <div class="product card">
+                        <h:form id="catalogForm">
+                            <p:dataScroller value="#{catalogBean.movies}" 
+                                            var="movie" 
+                                            chunkSize="10">
+                                <f:facet name="header">
+                                    Catálogo de películas
+                                </f:facet>
+
+                                <f:facet name="loader">
+                                    <div class="text-center">
+                                        <p:commandButton type="button" 
+                                                         value="Cargar más" 
+                                                         icon="pi pi-refresh"/>
+                                    </div>
+                                </f:facet>
+
+                                <div class="product">
+                                    <div class="product-list-item p-5">
+                                        <img src="#{movie.posterPath}"
+                                             alt="#{movie.title}"
+                                             style="width:150px; height:auto;" />
+
+                                        <div class="product-list-detail">
+                                            <div class="product-name">#{movie.title}</div>
+                                            <div class="product-description" style="margin-right: 50px;">
+                                                #{movie.overview}
+                                            </div>
+                                        </div>
+
+                                        <div class="product-list-action">
+                                            <h:outputText value="$ #{movie.price}" styleClass="product-price">
+                                                <f:convertNumber type="number" maxFractionDigits="0" />
+                                            </h:outputText>
+                                            <p:commandButton value="Agregar al carrito" 
+                                                             icon="pi pi-shopping-cart"
+                                                             action="#{cartBean.addToCart(movie, 1)}"
+                                                             update=":formCarrito :menuForm:messagesMenu" />
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </p:dataScroller>
+                        </h:form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </h:body>
+</html>

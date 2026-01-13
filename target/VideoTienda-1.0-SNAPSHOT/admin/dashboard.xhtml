@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:p="primefaces"
+      xmlns:f="jakarta.faces.core">
+
+    <h:head>
+        <title>Panel Administrador</title>
+        <h:outputStylesheet library="webjars" name="primeflex/3.3.1/primeflex.min.css"/>
+        <h:outputStylesheet library="css" name="layout.css"/>
+    </h:head>
+
+    <h:body>
+        <div class="layout-wrapper">
+            <div class="card mb-4">
+                <h:form id="menuForm">
+                    <p:menubar>
+                        <f:facet name="start">
+                            <span class="font-bold text-xl">Admin Panel</span>
+                        </f:facet>
+                        <f:facet name="end">
+                            <p:commandButton value="Logout"
+                                             action="#{loginBean.logout}"
+                                             icon="pi pi-sign-out"
+                                             styleClass="ui-button-info"/>
+                        </f:facet>
+                    </p:menubar>
+                </h:form>
+            </div>
+
+            <div class="layout-content p-4">
+                <h:form id="form">
+
+                    <p:growl id="messages" showDetail="true"/>
+
+                    <div class="grid mb-4">
+                        <div class="col-12 md:col-4">
+                            <div class="card p-4 text-white" style="background:#4CAF50">
+                                <div class="text-xl font-bold">
+                                    #{adminBean.totalTransactions}
+                                </div>
+                                <div>Total transacciones</div>
+                            </div>
+                        </div>
+
+                        <div class="col-12 md:col-4">
+                            <div class="card p-4 text-white" style="background:#2196F3">
+                                <div class="text-xl font-bold">
+                                    <h:outputText value="$ #{adminBean.totalRevenue}">
+                                        <f:convertNumber type="number" maxFractionDigits="2"/>
+                                    </h:outputText>
+                                </div>
+                                <div>Ingresos totales</div>
+                            </div>
+                        </div>
+
+                        <div class="col-12 md:col-4">
+                            <div class="card p-4 text-white" style="background:#9C27B0">
+                                <div class="text-xl font-bold">
+                                    #{adminBean.users.size()}
+                                </div>
+                                <div>Usuarios registrados</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TABLA USUARIOS -->
+                    <p:panel header="Gestión de Usuarios">
+                        <p:dataTable id="dt-users"
+                                     value="#{adminBean.users}"
+                                     var="user"
+                                     paginator="true"
+                                     rows="10">
+
+                            <p:column headerText="ID">
+                                #{user.id}
+                            </p:column>
+
+                            <p:column headerText="Nombre" sortBy="#{user.name}">
+                                #{user.name}
+                            </p:column>
+
+                            <p:column headerText="Email" sortBy="#{user.email}">
+                                #{user.email}
+                            </p:column>
+
+                            <p:column headerText="Rol" style="text-align:center">
+                                #{user.role.name}
+                            </p:column>
+
+                            <p:column headerText="Estado" style="text-align:center">
+                                <span class="p-2 border-round"
+                                      style="background:#{user.active ? '#C8E6C9' : '#FFCDD2'};
+                                      color:#{user.active ? '#2E7D32' : '#C62828'}">
+                                    #{user.active ? 'Activo' : 'Inactivo'}
+                                </span>
+                            </p:column>
+
+                            <p:column headerText="Compras" style="text-align:center">
+                                <p:badge value="#{adminBean.getUserOrderCount(user)}"/>
+                            </p:column>
+
+                            <p:column headerText="Acciones" style="text-align:center">
+                                <p:commandButton icon="pi pi-eye"
+                                                 styleClass="ui-button-rounded ui-button-info mr-2"
+                                                 action="#{adminBean.loadUserOrders(user)}"
+                                                 update=":dialogForm"
+                                                 oncomplete="PF('dlgOrders').show()"
+                                                 title="Ver compras"/>
+
+                                <p:commandButton icon="pi pi-pencil"
+                                                 styleClass="ui-button-rounded ui-button-warning mr-2"
+                                                 action="#{adminBean.prepareEditUser(user)}"
+                                                 update=":editForm"
+                                                 oncomplete="PF('dlgEdit').show()"
+                                                 title="Editar"/>
+
+                                <p:commandButton icon="#{user.active ? 'pi pi-ban' : 'pi pi-check'}"
+                                                 styleClass="ui-button-rounded #{user.active ? 'ui-button-danger' : 'ui-button-success'}"
+                                                 action="#{adminBean.toggleUserStatus(user)}"
+                                                 update="form:messages form:dt-users"
+                                                 title="#{user.active ? 'Desactivar' : 'Activar'}">
+                                    <p:confirm header="Confirmación"
+                                               message="#{user.active ?
+                                                          '¿Desactivar a '.concat(user.name).concat('?') :
+                                                          '¿Activar a '.concat(user.name).concat('?')}"
+                                               icon="pi pi-exclamation-triangle"/>
+                                </p:commandButton>
+
+                            </p:column>
+                        </p:dataTable>
+
+                        <p:confirmDialog global="true">
+                            <p:commandButton value="Sí" type="button"
+                                             styleClass="ui-confirmdialog-yes ui-button-success"/>
+                            <p:commandButton value="No" type="button"
+                                             styleClass="ui-confirmdialog-no ui-button-secondary"/>
+                        </p:confirmDialog>
+                    </p:panel>
+                </h:form>
+
+                <p:dialog header="Editar usuario"
+                          widgetVar="dlgEdit"
+                          modal="true"
+                          width="400">
+                    <h:form id="editForm">
+                        <div class="ui-fluid">
+                            <div class="field">
+                                <p:outputLabel value="Nombre"/>
+                                <p:inputText value="#{adminBean.userToEdit.name}" required="true"/>
+                            </div>
+                            <div class="field">
+                                <p:outputLabel value="Email"/>
+                                <p:inputText value="#{adminBean.userToEdit.email}" required="true"/>
+                            </div>
+                        </div>
+                    </h:form>
+                    <f:facet name="footer">
+                        <p:commandButton value="Guardar"
+                                         icon="pi pi-check"
+                                         styleClass="ui-button-success"
+                                         action="#{adminBean.updateUser}"
+                                         update=":form:dt-users :form:messages"
+                                         form="editForm"
+                                         oncomplete="if (!args.validationFailed) PF('dlgEdit').hide()" />
+
+                        <p:commandButton value="Cancelar"
+                                         icon="pi pi-times"
+                                         onclick="PF('dlgEdit').hide()"
+                                         type="button"
+                                         styleClass="ui-button-secondary" />
+                    </f:facet>
+
+                </p:dialog>
+
+                <p:dialog header="Historial de compras"
+                          widgetVar="dlgOrders"
+                          modal="true"
+                          width="800">
+                    <h:form id="dialogForm">
+                        <p:dataTable value="#{adminBean.selectedUserOrders}"
+                                     var="order"
+                                     paginator="true"
+                                     rows="10">
+                            <p:column headerText="ID">#{order.id}</p:column>
+                            <p:column headerText="Fecha">#{order.date}</p:column>
+                            <p:column headerText="Total">
+                                <h:outputText value="$ #{order.total}">
+                                    <f:convertNumber type="number" maxFractionDigits="2"/>
+                                </h:outputText>
+                            </p:column>
+
+                        </p:dataTable>
+                    </h:form>
+
+                    <f:facet name="footer">
+                        <p:commandButton value="Cerrar"
+                                         icon="pi pi-times"
+                                         onclick="PF('dlgOrders').hide()"
+                                         type="button"/>
+                    </f:facet>
+                </p:dialog>
+
+            </div>
+        </div>
+    </h:body>
+</html>

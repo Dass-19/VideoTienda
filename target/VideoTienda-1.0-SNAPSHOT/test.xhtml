@@ -1,0 +1,118 @@
+<p:dialog header="Mi Carrito" 
+          widgetVar="dlgCarrito" 
+          modal="true" 
+          showEffect="fade" 
+          width="800"
+          responsive="true"
+          closable="true"
+          draggable="false">
+    <h:form id="formCarrito">
+        <p:dataTable value="#{cartBean.items}" 
+                     var="item" 
+                     emptyMessage="El carrito está vacío"
+                     styleClass="mb-4"
+                     rows="5"
+                     paginator="true"
+                     paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                     currentPageReportTemplate="{totalRecords} items">
+
+            <p:column headerText="Película" style="width: 35%">
+                <h:outputText value="#{item.movieTitle}" />
+            </p:column>
+
+            <p:column headerText="Precio" style="width: 15%">
+                <h:outputText value="$ #{item.unitPrice}">
+                    <f:convertNumber type="number" maxFractionDigits="0" />
+                </h:outputText>
+            </p:column>
+
+            <p:column headerText="Cantidad" style="width: 20%">
+                <p:spinner value="#{item.quantity}" 
+                           min="1" 
+                           max="10"
+                           stepFactor="1">
+                    <p:ajax event="change" 
+                            listener="#{cartBean.updateQuantity(item.movieId, item.quantity)}"
+                            update="formCarrito :menuForm:messagesMenu" />
+                </p:spinner>
+            </p:column>
+
+            <p:column headerText="Subtotal" style="width: 15%">
+                <h:outputText value="$ #{item.unitPrice * item.quantity}">
+                    <f:convertNumber type="number" maxFractionDigits="0" />
+                </h:outputText>
+            </p:column>
+
+            <p:column headerText="Acciones" style="width: 15%; text-align: center">
+                <p:commandButton icon="pi pi-trash" 
+                                 styleClass="p-button-danger p-button-rounded p-button-text"
+                                 action="#{cartBean.removeFromCart(item.movieId)}"
+                                 update="formCarrito :menuForm:messagesMenu"
+                                 title="Eliminar">
+                    <p:confirm header="Confirmación" 
+                               message="¿Eliminar #{item.movieTitle} del carrito?" 
+                               icon="pi pi-exclamation-triangle" />
+                </p:commandButton>
+            </p:column>
+
+        </p:dataTable>
+
+        <div class="flex justify-content-between align-items-center mt-4" style="font-size: 1.2em;">
+            <div>
+                <strong>Total: </strong>
+                <h:outputText value="$ #{cartBean.total}" style="color: #4CAF50; font-size: 1.5em;">
+                    <f:convertNumber type="number" maxFractionDigits="0" />
+                </h:outputText>
+            </div>
+            
+            <div>
+                <p:commandButton value="Vaciar carrito" 
+                                 icon="pi pi-trash"
+                                 styleClass="p-button-warning p-button-outlined"
+                                 action="#{cartBean.clear()}"
+                                 update="formCarrito :menuForm:messagesMenu"
+                                 rendered="#{not empty cartBean.items}">
+                    <p:confirm header="Confirmación" 
+                               message="¿Vaciar todo el carrito?" 
+                               icon="pi pi-exclamation-triangle" />
+                </p:commandButton>
+            </div>
+        </div>
+    </h:form>
+    
+    <f:facet name="footer">
+        <div class="flex justify-content-between">
+            <div>
+                <p:commandButton value="Seguir Comprando"
+                                 icon="pi pi-arrow-left"
+                                 onclick="PF('dlgCarrito').hide()" 
+                                 type="button"
+                                 styleClass="p-button-secondary" />
+            </div>
+            
+            <div>
+                <p:commandButton value="Finalizar Compra" 
+                                 icon="pi pi-check" 
+                                 styleClass="p-button-success"
+                                 action="#{cartBean.completePurchase()}"
+                                 disabled="#{empty cartBean.items}"
+                                 update=":formCarrito :menuForm:messagesMenu"
+                                 oncomplete="if (!args.validationFailed) PF('dlgCarrito').hide()" />
+            </div>
+        </div>
+    </f:facet>
+</p:dialog>
+
+<!-- Confirm Dialog global - DEBE ESTAR FUERA de cualquier otro diálogo -->
+<p:confirmDialog global="true" 
+                 showEffect="fade" 
+                 hideEffect="fade"
+                 header="Confirmación"
+                 severity="warn">
+    <p:commandButton value="Sí" 
+                     type="button" 
+                     styleClass="ui-confirmdialog-yes p-button-success" />
+    <p:commandButton value="No" 
+                     type="button" 
+                     styleClass="ui-confirmdialog-no p-button-secondary" />
+</p:confirmDialog>
