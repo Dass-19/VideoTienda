@@ -1,8 +1,8 @@
 ## 🛠️ Tecnologías Utilizadas
-- **Java JDK 8+**
+- **Java JDK 11+**
 - **Java EE (JEE)**
 - **JSF (JavaServer Faces)**
-- **PrimeFaces**
+- **PrimeFaces 12+**
 - **WildFly**
 - **Maven**
 - **XHTML / CSS**
