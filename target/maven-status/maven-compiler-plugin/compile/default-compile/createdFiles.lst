@@ -1,4 +1,3 @@
-com\dass\ec\model\entity\Customer.class
 com\dass\ec\service\implement\OrderItemServiceImpl.class
 com\dass\ec\service\implement\OrderTransactionService.class
 com\dass\ec\repository\OrderRepository.class
@@ -36,5 +35,4 @@ com\dass\ec\repository\persistence\CrudRepository.class
 com\dass\ec\security\UserFilter.class
 com\dass\ec\model\entity\OrderItem.class
 com\dass\ec\service\implement\UserServiceImpl.class
-com\dass\ec\model\entity\Admin.class
 com\dass\ec\service\implement\AuthService.class

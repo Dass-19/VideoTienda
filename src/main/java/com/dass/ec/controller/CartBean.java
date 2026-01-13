@@ -66,13 +66,13 @@ public class CartBean implements Serializable {
         PrimeFaces.current().ajax().update(":menuForm", ":formCarrito");
     }
 
-    public void removeFromCart(String movieId) {
+    public void removeFromCart(Long movieId) {
         items.removeIf(item -> item.getMovieId().equals(movieId));
         FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Eliminado", "Película eliminada del carrito"));
         PrimeFaces.current().ajax().update(":menuForm", ":formCarrito");
     }
 
-    public void updateQuantity(String movieId, int newQuantity) {
+    public void updateQuantity(Long movieId, int newQuantity) {
         for (CartItemDTO item : items) {
             if (item.getMovieId().equals(movieId)) {
                 if (newQuantity <= 0) {
