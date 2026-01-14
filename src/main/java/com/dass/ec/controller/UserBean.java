@@ -7,15 +7,12 @@ package com.dass.ec.controller;
 import com.dass.ec.model.entity.User;
 import com.dass.ec.service.IUserService;
 import jakarta.ejb.EJB;
-import jakarta.faces.application.FacesMessage;
-import jakarta.faces.context.FacesContext;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Named;
 import java.io.Serializable;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
-import org.primefaces.PrimeFaces;
 
 /**
  *

@@ -5,7 +5,6 @@
 package com.dass.ec.repository;
 
 import com.dass.ec.model.entity.OrderItem;
-import com.dass.ec.model.entity.User;
 import com.dass.ec.repository.persistence.CrudRepository;
 import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;

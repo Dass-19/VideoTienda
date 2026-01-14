@@ -8,7 +8,6 @@ import com.dass.ec.model.entity.Role;
 import com.dass.ec.repository.persistence.CrudRepository;
 import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
-import java.util.List;
 
 /**
  *

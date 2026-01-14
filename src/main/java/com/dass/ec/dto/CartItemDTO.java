@@ -21,8 +21,12 @@ import lombok.NoArgsConstructor;
 @Builder
 public class CartItemDTO implements Serializable{
     private Long movieId;
+   
     private String movieTitle;
+    
     private LocalDate releaseDate;
+    
     private double unitPrice;
+    
     private int quantity;
 }
