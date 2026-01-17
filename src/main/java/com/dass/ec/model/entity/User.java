@@ -12,6 +12,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.NamedNativeQuery;
 import jakarta.persistence.Table;
 import java.io.Serializable;
 import lombok.AllArgsConstructor;
@@ -25,6 +26,11 @@ import lombok.NoArgsConstructor;
  */
 @Entity
 @Table(name="users")
+@NamedNativeQuery(
+    name = "User.fnGetByEmail",
+    query = "SELECT * FROM sp_get_user_by_email(:email)",
+    resultClass = User.class
+)
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

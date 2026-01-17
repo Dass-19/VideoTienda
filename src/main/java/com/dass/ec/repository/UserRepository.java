@@ -27,18 +27,14 @@ public class UserRepository extends CrudRepository<User> {
     }
 
     public User findByEmail(String email) {
-        return em.createQuery(
-                "SELECT u FROM User u JOIN FETCH u.role "
-                + "WHERE u.email = :email AND u.active = true",
-                User.class
-        )
-                .setParameter("email", email)
-                .getResultStream()
-                .findFirst()
-                .orElse(null);
+        List<User> result = em.createNamedQuery("User.fnGetByEmail", User.class)
+                            .setParameter("email", email)
+                            .getResultList();
+        
+        return result.isEmpty() ? null : result.get(0);
     }
 
     public List<User> findAllCustomers() {
-        return em.createQuery("SELECT u FROM User u " + "WHERE u.role.name = 'USER'",User.class).getResultList();
+        return em.createQuery("SELECT u FROM User u " + "WHERE u.role.name = 'USER'", User.class).getResultList();
     }
 }

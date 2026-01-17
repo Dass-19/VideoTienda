@@ -25,11 +25,11 @@ import java.util.concurrent.ThreadLocalRandom;
 @Stateless
 public class MovieServiceImpl implements IMovieService {
 
-    private static final String API_KEY = "31757217c1f0c4f2841e4b47c7b03aac";
+    public static final String API_KEY = System.getProperty("TMDB_API_KEY");
 
-    private static final String BASE_URL = "https://api.themoviedb.org/3/movie/popular?language=es-ES&page=1&api_key=";
+    public static final String BASE_URL = System.getProperty("TMDB_BASE_URL");
 
-    private static final String IMAGE_BASE = "https://image.tmdb.org/t/p/w300";
+    public static final String IMAGE_BASE = System.getProperty("TMDB_IMAGE_BASE");
 
     @Override
     public List<MovieDTO> getPopularMovies() {
